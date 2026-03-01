@@ -18,24 +18,6 @@ This project uses environment variables to securely manage database credentials.
    DB_PASSWORD=your_password
    ```
 
-### How It Works
-
-The configuration flow is:
-```
-.env → CredentialLoader → Properties → DatabaseUtil
-```
-
-1. **`.env`** file stores sensitive credentials (not committed to Git)
-2. **`CredentialLoader`** reads the `.env` file using the `dotenv-java` library
-3. **Properties object** holds the configuration in memory
-4. **`DatabaseUtil`** uses the Properties to establish database connections
-
-### Security Notes
-
-- The `.env` file is listed in `.gitignore` and will not be committed to version control
-- Never commit actual credentials to the repository
-- Use `.env.example` as a template for other developers
-
 ### Running the Project
 
 ```bash
