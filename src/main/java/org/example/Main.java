@@ -6,6 +6,10 @@ import org.example.Utilities.DatabaseUtil;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
-        DatabaseUtil.getConnection();
+//        DatabaseUtil.getConnection();
+        ReadProduct readProduct=new ReadProduct();
+        readProduct.readProduct();
+        Update update= new Update();
+        update.update();
     }
 }
