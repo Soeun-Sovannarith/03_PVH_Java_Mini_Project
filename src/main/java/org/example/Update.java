@@ -16,8 +16,8 @@ public void update(){
             ) {
             pStm.setString(1, "Kon khmer");
             pStm.setString(2, "Hello");
-            pStm2.setString(1, "JDBC");
-            pStm2.setString(2, "Veasna");
+            pStm2.setString(1, "Group3");
+            pStm2.setString(2, "JDBC");
             pStm.executeUpdate();
             pStm2.executeUpdate();
             conn.commit();

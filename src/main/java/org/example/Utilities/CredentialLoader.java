@@ -7,7 +7,6 @@ import java.util.Properties;
 public class CredentialLoader {
     public static Properties loadProperties() {
         Properties properties = new Properties();
-
         try (InputStream input =
                      CredentialLoader.class.getClassLoader()
                              .getResourceAsStream("application.properties")) {
