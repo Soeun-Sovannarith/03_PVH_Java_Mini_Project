@@ -1,30 +1,47 @@
 package org.example.Utilities;
 
-import java.io.IOException;
-import java.io.InputStream;
+import io.github.cdimascio.dotenv.Dotenv;
+
 import java.util.Properties;
 
 public class CredentialLoader {
+    private static Dotenv dotenv;
+
+    static {
+        try {
+            // Load .env file from the project root
+            dotenv = Dotenv.configure()
+                    .directory("./")
+                    .ignoreIfMissing()
+                    .load();
+        } catch (Exception e) {
+            System.err.println("Error loading .env file: " + e.getMessage());
+        }
+    }
+
     public static Properties loadProperties() {
         Properties properties = new Properties();
 
-        try (InputStream input =
-                     CredentialLoader.class.getClassLoader()
-                             .getResourceAsStream("application.properties")) {
-
-            if (input == null) {
-                System.out.println("File not found in classpath");
+        try {
+            if (dotenv == null) {
+                System.out.println(".env file not found or could not be loaded");
                 return properties;
             }
 
-            properties.load(input);
+            // Load environment variables into properties
+            String url = dotenv.get("DB_URL");
+            String username = dotenv.get("DB_USERNAME");
+            String password = dotenv.get("DB_PASSWORD");
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            if (url != null) properties.setProperty("url", url);
+            if (username != null) properties.setProperty("name", username);
+            if (password != null) properties.setProperty("password", password);
+
+        } catch (Exception e) {
+            System.err.println("Error loading properties from .env: " + e.getMessage());
         }
 
         return properties;
     }
-
 
 }
