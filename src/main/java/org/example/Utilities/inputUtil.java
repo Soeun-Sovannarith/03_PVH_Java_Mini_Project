@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class inputUtil {
     String rege="^[0-9]+$";
-    String nameRegex="^[a-zA-Z]+$";
+    String nameRegex="^[a-zA-Z]+(\\\\s+[a-zA-Z0-9]+)*$";
     String optionRegex="^[a-zA-Z]+$";
 
     static Scanner sc=new Scanner(System.in);
@@ -83,6 +83,7 @@ public class inputUtil {
         String balance;
         do {
             System.out.print(text);
+            sc.nextLine();
             balance=sc.next();
 
             if (Pattern.matches(regeDouble, balance)){

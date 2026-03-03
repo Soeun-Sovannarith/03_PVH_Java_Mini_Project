@@ -21,6 +21,10 @@ public class ProductController {
         return productService.readProduct();
     }
 
+    public List<Product> readProduct(int limit) throws SQLException {
+        return productService.readProduct(limit);
+    }
+
     public void deleteProduct(int id) throws SQLException {
         productService.deleteProduct(id);
     }

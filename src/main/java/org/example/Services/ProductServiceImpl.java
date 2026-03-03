@@ -23,9 +23,8 @@ public class ProductServiceImpl implements ProductService {
         String name=input.Inputname("Input Product Name:");
         double price=input.inputPrice("Input Unit Price :");
         int qty=input.qty("Input QTY:");
-        List<Product> product=new ArrayList<>();
-        product.add(new Product(name,price,qty,date));
-        return product;
+        productWrite.add(new Product(name,price,qty,date));
+        return productWrite;
     }
 
     @Override
@@ -80,82 +79,51 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> readProduct() throws SQLException {
+        return readProduct(10); // Default to 10 rows
+    }
+
+    @Override
+    public List<Product> readProduct(int limit) throws SQLException {
 
         List<Product> products = new ArrayList<>();
 
+        String sql = "SELECT id, name, price, qty, import_date, row_state FROM stock LIMIT ?";
+
         try (Connection con = DatabaseUtil.getConnection();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT * FROM stock")) {
+             PreparedStatement pt = con.prepareStatement(sql)) {
 
-            while (rs.next()) {
+            pt.setInt(1, limit);
 
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                double price = rs.getDouble("price");
-                int qty = rs.getInt("qty");
-                String import_date = rs.getString("import_date");
+            try (ResultSet rs = pt.executeQuery()) {
+                while (rs.next()) {
 
-                products.add(new Product(id, name, price, qty, import_date));
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    double price = rs.getDouble("price");
+                    int qty = rs.getInt("qty");
+                    String import_date = rs.getString("import_date");
+                    String rowState = rs.getString("row_state");
+
+                    products.add(new Product(id, name, price, qty, import_date, rowState));
+                }
             }
         }
-
         return products;
     }
 
     @Override
     public void deleteProduct(int id) throws SQLException {
-        List<Product> products= new ArrayList<>();
-        Connection con = DatabaseUtil.getConnection();
-        String deleteSQL = "DELETE FROM stock WHERE id=?";
-        try (PreparedStatement pt = con.prepareStatement(deleteSQL)) {
-            pt.setInt(1, id);
-            int rowsAffected = pt.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Delete Success");
-            }else  {
-                System.out.println("Delete Failed");
-            }
-        }
-    }
 
-    @Override
-    public void searchByIdProduct(int id) throws SQLException {
-        List<Product> products=new ArrayList<>();
-        Connection con = DatabaseUtil.getConnection();
-        String selectSQL = "SELECT * FROM stock WHERE id=?";
-        try (PreparedStatement pt = con.prepareStatement(selectSQL)) {
-            pt.setInt(1, id);
-            ResultSet rs = pt.executeQuery();
-            while (rs.next()) {
-                int idProduct = rs.getInt("id");
-                String name = rs.getString("name");
-                double price = rs.getDouble("price");
-                int qty = rs.getInt("qty");
-                String import_date = rs.getString("import_date");
-                products.add(new Product(idProduct, name, price, qty, import_date));
-            }
-        }
-        DisplayDataTable.displaytTable(products);
     }
 
     @Override
     public void searchProduct(String name) throws SQLException {
-        List<Product> productByName = new ArrayList<>();
-        Connection con = DatabaseUtil.getConnection();
-        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ?";
-        try (PreparedStatement ps = con.prepareStatement(selectSQL)) {
-            ps.setString(1, name + '%');
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String nameproduct = rs.getString("name");
-                double price = rs.getDouble("price");
-                int qty = rs.getInt("qty");
-                String import_date = rs.getString("import_date");
-                productByName.add(new Product(id, nameproduct, price, qty, import_date));
-            }
-        }
-        DisplayDataTable.displaytTable(productByName);
+
+    }
+
+    @Override
+    public void recoveryrow(int id) throws SQLException {
+
     }
 
 
