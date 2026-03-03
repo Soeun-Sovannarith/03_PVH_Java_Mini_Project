@@ -1,9 +1,12 @@
 package org.example;
 import org.example.Utilities.DatabaseUtil;
 import java.sql.*;
+import java.util.List;
+
 class ReadProduct {
+
     public void readProduct() {
-        String read_product = "SELECT * FROM test";
+        String read_product = "SELECT * FROM stock";
         //query data
         try (Connection conn = DatabaseUtil.getConnection();
              Statement stm = conn.createStatement();
@@ -14,7 +17,6 @@ class ReadProduct {
                 String name = rs.getString("name");
                 double price = rs.getInt("price");
                 int qty=rs.getInt("qty");
-
                 System.out.println("ID: " + id + " | Name: " + name +" | Unit Price" +price +" | QTY"+qty);
             }
             System.out.println("Query User successfully!");

@@ -4,9 +4,7 @@ import org.example.Models.Product;
 import org.nocrala.tools.texttablefmt.BorderStyle;
 import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
-
 import java.util.List;
-
 public class DisplayDataTable {
     public static void displaytTable(List<Product> products){
         Table table=new Table(5, BorderStyle.UNICODE_BOX, ShownBorders.ALL);
@@ -28,9 +26,5 @@ public class DisplayDataTable {
             table.addCell(w.getImport_date()+"");
         });
         System.out.println(table.render());
-
     }
-
-
-
 }

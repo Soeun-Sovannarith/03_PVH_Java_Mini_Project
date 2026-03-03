@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface ProductService {
   Product writeProduct();
+List<Product> readProduct();
+Product updateProduct();
+
 }

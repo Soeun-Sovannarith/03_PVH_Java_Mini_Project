@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class Update {
 public void update(){
-    String updateName = " update test set name = ? where name = ?";
+    String updateName = " update stock set name = ? where name = ?";
     try (Connection conn = DatabaseUtil.getConnection();
     ) {
         conn.setAutoCommit(false);

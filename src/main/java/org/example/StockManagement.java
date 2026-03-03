@@ -8,6 +8,7 @@ public class StockManagement {
     public static void run(){
         DatabaseUtil.getConnection();
         StockController.readProduct();
-        StockController.update();
+       StockController.getProductService();
+
     }
 }
