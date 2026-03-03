@@ -2,6 +2,7 @@ package org.example.Services;
 
 import org.example.Models.Product;
 import org.example.Utilities.DatabaseUtil;
+import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.inputUtil;
 
 import java.sql.*;
@@ -100,4 +101,43 @@ public class ProductServiceImpl implements ProductService {
 
         return products;
     }
+
+    @Override
+    public void deleteProduct(int id) throws SQLException {
+        List<Product> products= new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String deleteSQL = "DELETE FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(deleteSQL)) {
+            pt.setInt(1, id);
+            int rowsAffected = pt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Delete Success");
+            }else  {
+                System.out.println("Delete Failed");
+            }
+        }
+        DisplayDataTable.displaytTable(products);
+    }
+
+    @Override
+    public void searchProduct(String name) throws SQLException {
+        List<Product> productByName = new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ?";
+        try (PreparedStatement ps = con.prepareStatement(selectSQL)) {
+            ps.setString(1, name + '%');
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nameproduct = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                productByName.add(new Product(id, nameproduct, price, qty, import_date));
+            }
+        }
+        DisplayDataTable.displaytTable(productByName);
+    }
+
+
 }

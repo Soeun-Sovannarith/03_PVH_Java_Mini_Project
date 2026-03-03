@@ -10,12 +10,14 @@ import org.example.Utilities.inputUtil;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class UI {
-
+    Scanner scanner = new Scanner(System.in);
     ProductController productController = new ProductController();
     inputUtil inputUtil = new inputUtil();
     List<Product> readProduct=new ArrayList<>();
+    List<Product> searchProduct=new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
     Menu menu = new Menu();
 
@@ -35,6 +37,21 @@ public class UI {
                 case "R":{
                       readProduct=  productController.readProduct();
                     DisplayDataTable.displaytTable(readProduct);
+                    break;
+                }
+
+                case "D": {
+                    System.out.println("Enter product ID to delete: ");
+                    int id = scanner.nextInt();
+                    productController.deleteProduct(id);
+                    break;
+                }
+
+                case "S": {
+                    System.out.print("Input name for search: ");
+
+                    String name = scanner.nextLine().trim();
+                    productController.searchProduct(name);
                     break;
                 }
 
