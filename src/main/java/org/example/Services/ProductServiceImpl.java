@@ -124,7 +124,6 @@ public class ProductServiceImpl implements ProductService {
                 System.out.println("Delete Failed");
             }
         }
-        DisplayDataTable.displaytTable(products);
     }
 
     @Override
