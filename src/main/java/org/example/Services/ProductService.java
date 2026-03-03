@@ -9,4 +9,5 @@ import java.util.Properties;
 public interface ProductService {
   List<Product> writeProduct();
   void saveProduct(List<Product> products, String option) throws SQLException;
+  List<Product> readProduct() throws SQLException;
 }

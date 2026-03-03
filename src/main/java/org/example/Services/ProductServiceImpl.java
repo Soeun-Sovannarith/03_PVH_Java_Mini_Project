@@ -4,9 +4,7 @@ import org.example.Models.Product;
 import org.example.Utilities.DatabaseUtil;
 import org.example.Utilities.inputUtil;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,5 +77,25 @@ public class ProductServiceImpl implements ProductService {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<Product> readProduct() throws SQLException {
+        List<Product> products = new ArrayList<>();
+        Connection con= DatabaseUtil.getConnection();
+        Statement st=  con.createStatement();
+        ResultSet rs=st.executeQuery("SELECT * FROM stock");
+        while (rs.next()) {
+            int id=rs.getInt(1);
+            String name=rs.getString(2);
+            int unit_price=rs.getInt(3);
+            int qty=rs.getInt(4);
+            String import_date=rs.getString(5);
+            System.out.println("Id:  "+id + "   Name:  " + name + "   Unit_price:  " + unit_price+"   Import date :"+import_date);
+            products.add(new Product(id,name,unit_price,qty,import_date));
+            return products;
+
+        }
+        return products;
     }
 }

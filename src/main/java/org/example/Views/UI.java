@@ -3,6 +3,7 @@ package org.example.Views;
 import org.example.Controller.ProductController;
 import org.example.Models.Product;
 import org.example.Utilities.Color;
+import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.Menu;
 import org.example.Utilities.inputUtil;
 
@@ -14,6 +15,7 @@ public class UI {
 
     ProductController productController = new ProductController();
     inputUtil inputUtil = new inputUtil();
+    List<Product> readProduct=new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
     Menu menu = new Menu();
 
@@ -28,6 +30,11 @@ public class UI {
 
                 case "W": {
                     productWrite = productController.writeProduct();
+                    break;
+                }
+                case "R":{
+                  readProduct=  productController.readProduct();
+                    DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
 
