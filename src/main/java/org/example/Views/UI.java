@@ -2,6 +2,8 @@ package org.example.Views;
 
 import org.example.Controller.ProductController;
 import org.example.Models.Product;
+import org.example.Services.SettingService;
+import org.example.Services.SettingsServiceImpl;
 import org.example.Utilities.Color;
 import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.Menu;
@@ -15,6 +17,7 @@ import java.util.Scanner;
 public class UI {
     Scanner scanner = new Scanner(System.in);
     ProductController productController = new ProductController();
+    SettingService settingsService = new SettingsServiceImpl();
     inputUtil inputUtil = new inputUtil();
     List<Product> readProduct=new ArrayList<>();
     List<Product> searchProduct=new ArrayList<>();
@@ -35,7 +38,9 @@ public class UI {
                     break;
                 }
                 case "R":{
-                      readProduct=  productController.readProduct();
+                    int displayRows = settingsService.getDisplayRows();
+                    readProduct = productController.readProduct(displayRows);
+                    System.out.println(Color.blue + "Displaying " + readProduct.size() + " rows (limit: " + displayRows + ")" + Color.reset);
                     DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
@@ -44,6 +49,25 @@ public class UI {
                     System.out.println("Enter product ID to delete: ");
                     int id = scanner.nextInt();
                     productController.deleteProduct(id);
+                    break;
+                }
+
+                case "SE": {
+                    System.out.print("Enter number of rows to display (current: " + settingsService.getDisplayRows() + "): ");
+                    try {
+                        int rows = scanner.nextInt();
+                        scanner.nextLine(); // consume newline
+
+                        if (rows > 0) {
+                            settingsService.setDisplayRows(rows);
+                            System.out.println(Color.green + "Display rows updated! Next time you read (R), it will show " + rows + " rows." + Color.reset);
+                        } else {
+                            System.out.println(Color.red + "Please enter a positive number." + Color.reset);
+                        }
+                    } catch (Exception e) {
+                        scanner.nextLine(); // clear buffer
+                        System.out.println(Color.red + "Invalid input. Please enter a number." + Color.reset);
+                    }
                     break;
                 }
 
@@ -90,7 +114,12 @@ public class UI {
                     break;
                 }
 
+
                 case "B": {
+                    System.out.println("Exiting program...");
+                    System.exit(0);
+                }
+                case"E": {
                     System.out.println("Exiting program...");
                     System.exit(0);
                 }
