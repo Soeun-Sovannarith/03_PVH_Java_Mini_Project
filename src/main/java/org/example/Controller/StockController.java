@@ -1,12 +1,22 @@
 package org.example.Controller;
 
+import org.example.Models.Product;
 import org.example.Utilities.DatabaseUtil;
+import org.example.Utilities.DisplayDataTable;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StockController {
+
+    public static void deleteProduct() {
+        String delete_product = "DELETE FROM stock WHERE id = ?";
+
+    }
     public static void readProduct() {
-        String read_product = "SELECT * FROM test";
+        List<Product> listProduct=new ArrayList<>();
+        String read_product = "SELECT * FROM stock";
         //query data
         try (Connection conn = DatabaseUtil.getConnection();
              Statement stm = conn.createStatement();
@@ -15,11 +25,14 @@ public class StockController {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String name = rs.getString("name");
-                double price = rs.getInt("price");
+                double price = rs.getDouble("price");
                 int qty = rs.getInt("qty");
-
-                System.out.println("ID: " + id + " | Name: " + name + " | Unit Price" + price + " | QTY" + qty);
+                String importDate = rs.getString("import_date");
+                listProduct.add(new Product(id,name,price,qty,importDate));
+//                System.out.println("ID: " + id + " | Name: " + name + " | Unit Price" + price + " | QTY" + qty + " | ImportDate " + importDate);
+//                DisplayDataTable.displaytTable(listProduct);
             }
+            DisplayDataTable.displaytTable(listProduct);
             System.out.println("Query User successfully!");
         } catch (SQLException e) {
             System.out.println("Error" + e);
@@ -34,8 +47,8 @@ public class StockController {
             try (PreparedStatement pStm = conn.prepareStatement(updateName);
                  PreparedStatement pStm2 = conn.prepareStatement(updateName)
             ) {
-                pStm.setString(1, "Kon khmer");
-                pStm.setString(2, "Hello");
+                pStm.setString(1, "Tonny");
+                pStm.setString(2, "Endy");
                 pStm2.setString(1, "JDBC");
                 pStm2.setString(2, "Veasna");
                 pStm.executeUpdate();
