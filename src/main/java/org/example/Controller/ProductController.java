@@ -20,4 +20,12 @@ public class ProductController {
     public List<Product> readProduct() throws SQLException {
         return productService.readProduct();
     }
+
+    public void deleteProduct(int id) throws SQLException {
+        productService.deleteProduct(id);
+    }
+    public void searchProduct(String name) throws SQLException {
+        productService.searchProduct(name);
+
+    }
 }

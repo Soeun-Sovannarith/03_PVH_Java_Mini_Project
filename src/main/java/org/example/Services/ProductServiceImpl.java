@@ -2,6 +2,7 @@ package org.example.Services;
 
 import org.example.Models.Product;
 import org.example.Utilities.DatabaseUtil;
+import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.inputUtil;
 
 import java.sql.*;
