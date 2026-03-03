@@ -1,10 +1,18 @@
 package org.example.Controller;
 
+import org.example.Models.Product;
+import org.example.Services.ProductService;
+import org.example.Services.ProductServiceImpl;
 import org.example.Utilities.DatabaseUtil;
 
 import java.sql.*;
+import java.util.List;
 
-public class StockController {
+public class ProductController {
+    public ProductService productService=new ProductServiceImpl();
+    public void writeProduct(){
+          productService.writeProduct();
+    }
     public static void readProduct() {
         String read_product = "SELECT * FROM test";
         //query data
