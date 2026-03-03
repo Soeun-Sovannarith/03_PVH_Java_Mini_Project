@@ -33,7 +33,7 @@ public class UI {
                     break;
                 }
                 case "R":{
-//                      readProduct=  productController.readProduct();
+                      readProduct=  productController.readProduct();
                     DisplayDataTable.displaytTable(readProduct);
                     break;
                 }

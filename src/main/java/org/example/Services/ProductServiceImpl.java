@@ -79,21 +79,25 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> readProduct() throws SQLException {
-        List<Product> products = new ArrayList<>();
-        Connection con= DatabaseUtil.getConnection();
-        Statement st=  con.createStatement();
-        ResultSet rs=st.executeQuery("SELECT * FROM stock");
-        while (rs.next()) {
-            int id=rs.getInt(1);
-            String name=rs.getString(2);
-            int unit_price=rs.getInt(3);
-            int qty=rs.getInt(4);
-            String import_date=rs.getString(5);
-            System.out.println("Id:  "+id + "   Name:  " + name + "   Unit_price:  " + unit_price+"   Import date :"+import_date);
-            products.add(new Product(id,name,unit_price,qty,import_date));
-            return products;
 
+        List<Product> products = new ArrayList<>();
+
+        try (Connection con = DatabaseUtil.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM stock")) {
+
+            while (rs.next()) {
+
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+
+                products.add(new Product(id, name, price, qty, import_date));
+            }
         }
+
         return products;
     }
 }
