@@ -22,9 +22,8 @@ public class ProductServiceImpl implements ProductService {
         String name=input.Inputname("Input Product Name:");
         double price=input.inputPrice("Input Unit Price :");
         int qty=input.qty("Input QTY:");
-        List<Product> product=new ArrayList<>();
-        product.add(new Product(name,price,qty,date));
-        return product;
+        productWrite.add(new Product(name,price,qty,date));
+        return productWrite;
     }
 
     @Override
@@ -97,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
                 products.add(new Product(id, name, price, qty, import_date));
             }
         }
-
         return products;
     }
+
 }
