@@ -11,8 +11,8 @@ import java.util.List;
 
 public class ProductController {
     public ProductService productService=new ProductServiceImpl();
-    public void writeProduct(){
-          productService.writeProduct();
+    public List<Product> writeProduct(){
+           return productService.writeProduct();
     }
     public static void readProduct() {
         List<>

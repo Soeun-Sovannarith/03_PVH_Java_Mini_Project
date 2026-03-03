@@ -6,8 +6,6 @@ import org.example.Utilities.DatabaseUtil;
 
 public class StockManagement {
     public static void run(){
-        DatabaseUtil.getConnection();
-        ProductController.readProduct();
-        ProductController.update();
+
     }
 }

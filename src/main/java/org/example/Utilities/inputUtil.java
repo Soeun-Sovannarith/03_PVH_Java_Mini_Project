@@ -8,7 +8,7 @@ public class inputUtil {
     String nameRegex="^[a-zA-Z]+$";
     String optionRegex="^[a-zA-Z]+$";
 
-    Scanner sc=new Scanner(System.in);
+    static Scanner sc=new Scanner(System.in);
     String regeDouble="[0-9]{1,13}(.[0-9]*)$";
     String YesNo= "^[y|n]$";
 
@@ -64,7 +64,7 @@ public class inputUtil {
     }
 
 
-    public String option(String text){
+    public  String option(String text){
         String name;
         do {
             System.out.print(text);
