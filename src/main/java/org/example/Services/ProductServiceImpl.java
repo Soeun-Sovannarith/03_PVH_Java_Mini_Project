@@ -79,25 +79,52 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> readProduct() throws SQLException {
+        return readProduct(10); // Default to 10 rows
+    }
+
+    @Override
+    public List<Product> readProduct(int limit) throws SQLException {
 
         List<Product> products = new ArrayList<>();
 
+        String sql = "SELECT id, name, price, qty, import_date, row_state FROM stock LIMIT ?";
+
         try (Connection con = DatabaseUtil.getConnection();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT * FROM stock")) {
+             PreparedStatement pt = con.prepareStatement(sql)) {
 
-            while (rs.next()) {
+            pt.setInt(1, limit);
 
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                double price = rs.getDouble("price");
-                int qty = rs.getInt("qty");
-                String import_date = rs.getString("import_date");
+            try (ResultSet rs = pt.executeQuery()) {
+                while (rs.next()) {
 
-                products.add(new Product(id, name, price, qty, import_date));
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    double price = rs.getDouble("price");
+                    int qty = rs.getInt("qty");
+                    String import_date = rs.getString("import_date");
+                    String rowState = rs.getString("row_state");
+
+                    products.add(new Product(id, name, price, qty, import_date, rowState));
+                }
             }
         }
         return products;
     }
+
+    @Override
+    public void deleteProduct(int id) throws SQLException {
+
+    }
+
+    @Override
+    public void searchProduct(String name) throws SQLException {
+
+    }
+
+    @Override
+    public void recoveryrow(int id) throws SQLException {
+
+    }
+
 
 }
