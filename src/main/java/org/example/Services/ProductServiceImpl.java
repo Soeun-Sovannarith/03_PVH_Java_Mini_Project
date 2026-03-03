@@ -36,7 +36,6 @@ public class ProductServiceImpl implements ProductService {
                 String insertSQL = "INSERT INTO stock(name, price, qty, import_date) VALUES (?, ?, ?, ?)";
                 try (PreparedStatement pt = con.prepareStatement(insertSQL)) {
                     for (Product product : products) {
-
                         pt.setString(1, product.getName());
                         pt.setDouble(2, product.getPrice());
                         pt.setInt(3, product.getQty());
@@ -44,11 +43,9 @@ public class ProductServiceImpl implements ProductService {
 
                         pt.executeUpdate();
                     }
-
                     con.commit();
                     System.out.println("Insert Success ");
                     products.clear();
-
                 }
 
             } else if (option.equalsIgnoreCase("su")) {
@@ -78,6 +75,7 @@ public class ProductServiceImpl implements ProductService {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public List<Product> readProduct() throws SQLException {
