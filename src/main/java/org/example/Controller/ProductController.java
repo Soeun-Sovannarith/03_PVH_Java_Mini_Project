@@ -10,7 +10,17 @@ import java.sql.*;
 import java.util.List;
 
 public class ProductController {
-    public ProductService productService=new ProductServiceImpl();
+    public ProductService productService = new ProductServiceImpl() {
+        @Override
+        public void deleteProduct(int id) throws SQLException {
+
+        }
+
+        @Override
+        public void searchProduct(String name) throws SQLException {
+
+        }
+    };
     public List<Product> writeProduct() {
         return productService.writeProduct();
     }
