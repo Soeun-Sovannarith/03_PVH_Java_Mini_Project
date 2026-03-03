@@ -16,7 +16,7 @@ public class ProductServiceImpl implements ProductService {
     List<Product> productsUpdate = new ArrayList<>();
     public static int idDatabase=0;
     @Override
-    public void writeProduct() {
+    public List<Product> writeProduct() {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd ");
         Date now = new Date();
         String date= sdfDate.format(now);
@@ -24,48 +24,60 @@ public class ProductServiceImpl implements ProductService {
         String name=input.Inputname("Input Product Name:");
         double price=input.inputPrice("Input Unit Price :");
         int qty=input.qty("Input QTY:");
-        productWrite.add(new Product(name,price,qty,date));
+        List<Product> product=new ArrayList<>();
+        product.add(new Product(name,price,qty,date));
+        return product;
     }
 
     @Override
-    public void saveProduct(List<Product> products, String option) throws SQLException {
-        Connection con=DatabaseUtil.getConnection();
-        if(option.equals("si")){
-            String insertSQL = "INSERT INTO stock(name, unit_price, qty, import_date) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement pt = con.prepareStatement(insertSQL)) {
-                for (Product product : products) {
-                    pt.setString(1, product.getName());
-                    pt.setDouble(2, product.getPrice());
-                    pt.setInt(3, product.getQty());
-                    pt.setString(4, product.getImport_date());
-                    pt.executeUpdate();
-                    System.out.println("Insert Success");
+    public void saveProduct(List<Product> products, String option) {
+
+        try (Connection con = DatabaseUtil.getConnection()) {
+            con.setAutoCommit(false);
+            if (option.equalsIgnoreCase("si")) {
+                String insertSQL = "INSERT INTO stock(name, price, qty, import_date) VALUES (?, ?, ?, ?)";
+                try (PreparedStatement pt = con.prepareStatement(insertSQL)) {
+                    for (Product product : products) {
+
+                        pt.setString(1, product.getName());
+                        pt.setDouble(2, product.getPrice());
+                        pt.setInt(3, product.getQty());
+                        pt.setString(4, product.getImport_date());
+
+                        pt.executeUpdate();
+                    }
+
+                    con.commit();
+                    System.out.println("Insert Success ");
+                    products.clear();
+
                 }
-                con.commit(); // Commit transaction
-                products.clear(); // Remove all products after successful save
-            } catch (SQLException e) {
-                con.rollback();
-                throw new RuntimeException(e);
+
+            } else if (option.equalsIgnoreCase("su")) {
+
+                String updateSQL = "UPDATE stock SET name=?, price=?, qty=?, import_date=? WHERE id=?";
+
+                try (PreparedStatement pt = con.prepareStatement(updateSQL)) {
+
+                    for (Product product : products) {
+
+                        pt.setString(1, product.getName());
+                        pt.setDouble(2, product.getPrice());
+                        pt.setInt(3, product.getQty());
+                        pt.setString(4, product.getImport_date());
+                        pt.setInt(5, product.getId()); // FIXED
+
+                        pt.executeUpdate();
+                    }
+
+                    con.commit();
+                    System.out.println("Update Success ");
+                    products.clear();
+                }
             }
 
-        } else if (option.equals("su")) {
-            String updateSQL = "UPDATE stock SET name=?, unit_price=?, qty=?, import_date=? WHERE id=?";
-            try (PreparedStatement pt = con.prepareStatement(updateSQL)) {
-                for (Product product : products) {
-                    pt.setString(1, product.getName());
-                    pt.setDouble(2, product.getPrice());
-                    pt.setInt(3, product.getQty());
-                    pt.setString(4, product.getImport_date());
-                    pt.setInt(5, idDatabase);
-                    pt.executeUpdate();
-                    System.out.println("Update Success");
-                }
-                con.commit();
-                products.clear();
-            } catch (SQLException e) {
-                con.rollback();
-                throw new RuntimeException(e);
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

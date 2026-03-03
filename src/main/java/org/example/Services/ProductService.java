@@ -4,8 +4,9 @@ import org.example.Models.Product;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Properties;
 
 public interface ProductService {
-  void writeProduct();
+  List<Product> writeProduct();
   void saveProduct(List<Product> products, String option) throws SQLException;
 }
