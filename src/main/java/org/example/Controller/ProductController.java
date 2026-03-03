@@ -17,4 +17,15 @@ public class ProductController {
     public void saveProduct(List<Product> products,String option) throws SQLException {
          productService.saveProduct(products,option);
     }
+    public List<Product> readProduct() throws SQLException {
+        return productService.readProduct();
+    }
+
+    public void updateProduct() {
+        productService.updateProduct();
+    }
+
+    public ProductService getProductService() {
+        return productService;
+    }
 }

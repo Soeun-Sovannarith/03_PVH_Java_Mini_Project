@@ -17,6 +17,7 @@ public class UI {
     inputUtil inputUtil = new inputUtil();
     List<Product> readProduct=new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
+
     Menu menu = new Menu();
 
     public void displayUI() throws SQLException {
@@ -33,11 +34,14 @@ public class UI {
                     break;
                 }
                 case "R":{
-//                      readProduct=  productController.readProduct();
+                      readProduct=  productController.readProduct();
                     DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
-
+                case "U":{
+                productController.updateProduct();
+                    break;
+                }
                 case "SA": {
 
                     if (productWrite.isEmpty()) {

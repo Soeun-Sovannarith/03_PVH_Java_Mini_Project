@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+
 public class ProductServiceImpl implements ProductService {
     List<Product> productWrite=new ArrayList<>();
     List<Product> productsUpdate = new ArrayList<>();
@@ -79,45 +81,58 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> readProduct() throws SQLException {
+
         List<Product> products = new ArrayList<>();
-        Connection con= DatabaseUtil.getConnection();
-        Statement st=  con.createStatement();
-        ResultSet rs=st.executeQuery("SELECT * FROM stock");
-        while (rs.next()) {
-            int id=rs.getInt(1);
-            String name=rs.getString(2);
-            int unit_price=rs.getInt(3);
-            int qty=rs.getInt(4);
-            String import_date=rs.getString(5);
-            System.out.println("Id:  "+id + "   Name:  " + name + "   Unit_price:  " + unit_price+"   Import date :"+import_date);
-            products.add(new Product(id,name,unit_price,qty,import_date));
-            return products;
+
+        try (Connection con = DatabaseUtil.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery("SELECT * FROM stock")) {
+
+            while (rs.next()) {
+
+                int id = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+
+                products.add(new Product(id, name, price, qty, import_date));
+            }
         }
+
         return products;
     }
-    public Product updateProduct() {
-        String updateName = " update stock set name = ? where name = ?";
+    public void updateProduct() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Product ID to update: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+        System.out.print("Enter new product name: ");
+        String name = scanner.nextLine();
+
+        System.out.print("Enter new price: ");
+        double price = scanner.nextDouble();
+
+        System.out.print("Enter new qty: ");
+        int qty = scanner.nextInt();
+        scanner.nextLine();
+
+        String sql = "UPDATE stock SET name=?, price=?, qty=? WHERE id=?";
         try (Connection conn = DatabaseUtil.getConnection();
-        ) {
-            conn.setAutoCommit(false);
-            try (PreparedStatement pStm = conn.prepareStatement(updateName);
-                 PreparedStatement pStm2 = conn.prepareStatement(updateName)
-            ) {
-                pStm.setString(1, "Vea");
-                pStm.setString(2, "Sathim");
-                pStm2.setString(1, "Hello");
-                pStm2.setString(2, "Veasna");
-                pStm.executeUpdate();
-                pStm2.executeUpdate();
-                conn.commit();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setDouble(2, price);
+            ps.setInt(3, qty);
+            ps.setInt(4, id);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
                 System.out.println("Update success!");
-            } catch (SQLException e) {
-                conn.rollback();
+            } else {
+                System.out.println("Product not found.");
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            System.out.println("Exception "+e);
         }
-        return null;
     }
 
 }
