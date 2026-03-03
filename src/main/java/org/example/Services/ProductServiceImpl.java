@@ -116,6 +116,25 @@ public class ProductServiceImpl implements ProductService {
                 System.out.println("Delete Failed");
             }
         }
+    }
+
+    @Override
+    public void searchByIdProduct(int id) throws SQLException {
+        List<Product> products=new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String selectSQL = "SELECT * FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(selectSQL)) {
+            pt.setInt(1, id);
+            ResultSet rs = pt.executeQuery();
+            while (rs.next()) {
+                int idProduct = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                products.add(new Product(idProduct, name, price, qty, import_date));
+            }
+        }
         DisplayDataTable.displaytTable(products);
     }
 

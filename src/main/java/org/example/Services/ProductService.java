@@ -11,5 +11,6 @@ public interface ProductService {
   void saveProduct(List<Product> products, String option) throws SQLException;
   List<Product> readProduct() throws SQLException;
   void deleteProduct(int id) throws SQLException;
+  void searchByIdProduct(int id) throws SQLException;
   void searchProduct(String name) throws SQLException;
 }
