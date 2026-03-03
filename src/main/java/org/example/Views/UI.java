@@ -20,7 +20,6 @@ public class UI {
     SettingService settingsService = new SettingsServiceImpl();
     inputUtil inputUtil = new inputUtil();
     List<Product> readProduct=new ArrayList<>();
-    List<Product> searchProduct=new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
     Menu menu = new Menu();
 
@@ -46,9 +45,15 @@ public class UI {
                 }
 
                 case "D": {
-                    System.out.println("Enter product ID to delete: ");
+                    System.out.print("Enter product ID to delete: ");
                     int id = scanner.nextInt();
-                    productController.deleteProduct(id);
+                    scanner.nextLine();
+                    productController.searchByIdProduct(id);
+                    System.out.print("Are you sure you want to delete this product? " + id + "(Y/N) ");
+                    String choice = scanner.nextLine();
+                    if(choice.equalsIgnoreCase("Y")) {
+                        productController.deleteProduct(id);
+                    }
                     break;
                 }
 

@@ -30,6 +30,8 @@ public class ProductController {
     }
     public void searchProduct(String name) throws SQLException {
         productService.searchProduct(name);
-
+    }
+    public void searchByIdProduct (int id) throws SQLException {
+        productService.searchByIdProduct(id);
     }
 }
