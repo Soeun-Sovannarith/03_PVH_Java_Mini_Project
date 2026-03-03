@@ -6,7 +6,13 @@ public class Product {
     private double price;
     private int qty;
     private String import_date;
+    public Product(String name, double price, int qty, String import_date){
 
+        this.name=name;
+        this.price=price;
+        this.qty=qty;
+        this.import_date=import_date;
+    }
     public Product(int id, String name, double price, int qty, String import_date){
         this.id=id;
         this.name=name;
