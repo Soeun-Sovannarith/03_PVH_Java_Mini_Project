@@ -87,7 +87,7 @@ public class ProductServiceImpl implements ProductService {
 
         List<Product> products = new ArrayList<>();
 
-        String sql = "SELECT id, name, price, qty, import_date, row_state FROM stock LIMIT ?";
+        String sql = "SELECT id, name, price, qty, import_date FROM stock LIMIT ?";
 
         try (Connection con = DatabaseUtil.getConnection();
              PreparedStatement pt = con.prepareStatement(sql)) {
@@ -102,9 +102,8 @@ public class ProductServiceImpl implements ProductService {
                     double price = rs.getDouble("price");
                     int qty = rs.getInt("qty");
                     String import_date = rs.getString("import_date");
-                    String rowState = rs.getString("row_state");
 
-                    products.add(new Product(id, name, price, qty, import_date, rowState));
+                    products.add(new Product(id, name, price, qty, import_date));
                 }
             }
         }
@@ -113,17 +112,64 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(int id) throws SQLException {
+        List<Product> products= new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String deleteSQL = "DELETE FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(deleteSQL)) {
+            pt.setInt(1, id);
+            int rowsAffected = pt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Delete Success");
+            }else  {
+                System.out.println("Delete Failed");
+            }
+        }
+        DisplayDataTable.displaytTable(products);
+    }
 
+    @Override
+    public void searchByIdProduct(int id) throws SQLException {
+        List<Product> products= new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String searchByIdSQL = "SELECT * FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(searchByIdSQL)) {
+            pt.setInt(1, id);
+            ResultSet rs = pt.executeQuery();
+            while (rs.next()) {
+                int idProduct = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                products.add(new Product(idProduct, name, price, qty, import_date));
+            }
+        }
+        DisplayDataTable.displaytTable(products);
     }
 
     @Override
     public void searchProduct(String name) throws SQLException {
-
+        List<Product> productByName = new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ?";
+        try (PreparedStatement ps = con.prepareStatement(selectSQL)) {
+            ps.setString(1, name + '%');
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nameproduct = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                productByName.add(new Product(id, nameproduct, price, qty, import_date));
+            }
+        }
+        DisplayDataTable.displaytTable(productByName);
     }
 
     @Override
     public void recoveryrow(int id) throws SQLException {
-
+        
     }
 
 
