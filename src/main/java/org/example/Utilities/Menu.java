@@ -50,13 +50,6 @@ public class Menu {
         table.addCell(centerText("Ba) Backup", 30));
         table.addCell(centerText("Re) Restore", 30));
 
-        // Pagination selection row
-        table.addCell(centerText("N) Next Page", 30));
-        table.addCell(centerText("P) Previous Page", 30));
-        table.addCell(centerText("F) First Page", 30));
-        table.addCell(centerText("L) Last Page", 30));
-        table.addCell(centerText("G) Goto", 30));
-
         table.addCell(centerText("E) Exit", 150), 5);
 
         System.out.println(table.render());

@@ -37,7 +37,8 @@ public class UI {
 
                 case "R":{
                       readProduct=  productController.readProduct();
-                    DisplayDataTable.displaytTable(readProduct);
+                    DisplayDataTable.displayTableWithPagination(readProduct);
+//                    DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
 

@@ -6,6 +6,7 @@ import org.nocrala.tools.texttablefmt.ShownBorders;
 import org.nocrala.tools.texttablefmt.Table;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class DisplayDataTable {
     public static void displaytTable(List<Product> products){
@@ -31,6 +32,39 @@ public class DisplayDataTable {
 
     }
 
+    public static void displayTableWithPagination(List<Product> products) {
+        Scanner scanner = new Scanner(System.in);
+        int pageSize = 5;
+        int currentPage = 0;
+        int totalRecord = products.size();
+        int totalPage = (int) Math.ceil((double) totalRecord / pageSize);
 
+        while (true) {
+            int start = currentPage * pageSize;
+            int end = Math.min(start + pageSize, totalRecord);
+
+            List<Product> pageList = products.subList(start, end);
+            System.out.println("\n--- Page " + (currentPage + 1) + " of " + totalPage + " ---");
+            displaytTable(pageList);
+            System.out.println("F. First\tN. Next\tP. Previous\tL. Last\tE. Exit");
+            System.out.print("==> Enter choice: ");
+            String choice = scanner.nextLine();
+
+            switch (choice.toUpperCase()) {
+                case "F" -> currentPage = 0;
+                case "N" -> {
+                    if (currentPage < totalPage - 1) currentPage++;
+                }
+                case "P" -> {
+                    if (currentPage > 0) currentPage--;
+                }
+                case "T" -> currentPage = totalPage - 1;
+                case "E" -> {
+                    return;
+                }
+                default -> System.out.println("Invalid choice!");
+            }
+        }
+    }
 
 }
