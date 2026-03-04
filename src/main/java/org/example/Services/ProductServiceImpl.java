@@ -14,13 +14,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 
 public class ProductServiceImpl implements ProductService {
-    List<Product> productWrite=new ArrayList<>();
+    List<Product> productWrite = new ArrayList<>();
     List<Product> productsUpdate = new ArrayList<>();
-    public static int idDatabase=0;
+    public static int idDatabase = 0;
     private int currentId = -1;
+
     @Override
     public List<Product> writeProduct() {
 
@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
             } else {
                 currentId++;
             }
-            System.out.println("New Product ID = " + + currentId);
+            System.out.println("New Product ID = " + +currentId);
 
             SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
             Date now = new Date();
@@ -44,7 +44,7 @@ public class ProductServiceImpl implements ProductService {
             double price = input.inputPrice("Input Unit Price: ");
             int qty = input.qty("Input QTY: ");
 
-            productWrite.add(new Product( name, price, qty, date));
+            productWrite.add(new Product(name, price, qty, date));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -52,12 +52,13 @@ public class ProductServiceImpl implements ProductService {
 
         return productWrite;
     }
+
     private int getNextId() throws SQLException {
         String sql = "SELECT COALESCE(MAX(id),0) + 1 AS next_id FROM stock";
 
         try (Connection con = DatabaseUtil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
                 return rs.getInt("next_id");
@@ -90,7 +91,7 @@ public class ProductServiceImpl implements ProductService {
             } else if (option.equalsIgnoreCase("su")) {
 
                 String updateSQL = "UPDATE stock SET name=?, price=?, qty=?, import_date=? WHERE id=?";
-                 int count=0;
+                int count = 0;
                 try (PreparedStatement pt = con.prepareStatement(updateSQL)) {
                     for (Product product : products) {
 
@@ -102,7 +103,7 @@ public class ProductServiceImpl implements ProductService {
 
                         pt.executeUpdate();
                         count++;
-                        System.out.println("Product "+count+" Updated Successfully ");
+                        System.out.println("Product " + count + " Updated Successfully ");
                     }
 
                     con.commit();
@@ -118,7 +119,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void unSave(List<Product> products, String option) {
-             DisplayDataTable.displaytTable(products);
+        DisplayDataTable.displaytTable(products);
     }
 
     @Override
@@ -130,7 +131,7 @@ public class ProductServiceImpl implements ProductService {
         String sql = "SELECT * FROM stock WHERE id=?";
 
         try (Connection con = DatabaseUtil.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -187,30 +188,42 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> readProduct() throws SQLException {
-        return readProduct(10); // Default to 10 rows
+        return readProduct(1, 10);
     }
 
     @Override
-    public List<Product> readProduct(int limit) throws SQLException {
+    public int countAllProducts() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM stock";
+        try (Connection con = DatabaseUtil.getConnection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
 
+    @Override
+    public List<Product> readProduct(int page, int limit) throws SQLException {
         List<Product> products = new ArrayList<>();
+        int offset = (page - 1) * limit;
 
-        String sql = "SELECT id, name, price, qty, import_date FROM stock LIMIT ?";
+        String sql = "SELECT id, name, price, qty, import_date FROM stock ORDER BY id ASC LIMIT ? OFFSET ?";
 
         try (Connection con = DatabaseUtil.getConnection();
-             PreparedStatement pt = con.prepareStatement(sql)) {
+                PreparedStatement pt = con.prepareStatement(sql)) {
 
             pt.setInt(1, limit);
+            pt.setInt(2, offset);
 
             try (ResultSet rs = pt.executeQuery()) {
                 while (rs.next()) {
-
                     int id = rs.getInt("id");
                     String name = rs.getString("name");
                     double price = rs.getDouble("price");
                     int qty = rs.getInt("qty");
                     String import_date = rs.getString("import_date");
-
                     products.add(new Product(id, name, price, qty, import_date));
                 }
             }
@@ -219,16 +232,20 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<Product> readProduct(int limit) throws SQLException {
+        return readProduct(1, limit);
+    }
+
+    @Override
     public void deleteProduct(int id) throws SQLException {
-        List<Product> products= new ArrayList<>();
-        Connection con = DatabaseUtil.getConnection();
         String deleteSQL = "DELETE FROM stock WHERE id=?";
-        try (PreparedStatement pt = con.prepareStatement(deleteSQL)) {
+        try (Connection con = DatabaseUtil.getConnection();
+                PreparedStatement pt = con.prepareStatement(deleteSQL)) {
             pt.setInt(1, id);
             int rowsAffected = pt.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Delete Success");
-            }else  {
+            } else {
                 System.out.println("Delete Failed");
             }
         }
@@ -236,7 +253,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void searchByIdProduct(int id) throws SQLException {
-        List<Product> products= new ArrayList<>();
+        List<Product> products = new ArrayList<>();
         Connection con = DatabaseUtil.getConnection();
         String searchByIdSQL = "SELECT * FROM stock WHERE id=?";
         try (PreparedStatement pt = con.prepareStatement(searchByIdSQL)) {
@@ -254,13 +271,11 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(products);
     }
 
-
-
     @Override
     public void searchProduct(String name) throws SQLException {
         List<Product> productByName = new ArrayList<>();
         Connection con = DatabaseUtil.getConnection();
-        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ?";
+        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ? ORDER BY id ASC";
         try (PreparedStatement ps = con.prepareStatement(selectSQL)) {
             ps.setString(1, name + '%');
             ResultSet rs = ps.executeQuery();
@@ -276,36 +291,48 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(productByName);
     }
 
-    
+    @Override
+    public void recoveryrow(int id) throws SQLException {
+
+    }
 
     public void restoreProduct() {
         File[] files = new File("src/backup/").listFiles((d, n) -> n.endsWith(".sql"));
-        if (files == null || files.length == 0) { System.out.println("No backup found."); return; }
+        if (files == null || files.length == 0) {
+            System.out.println("No backup found.");
+            return;
+        }
 
         System.out.println("+-----+------------------------------------------+");
-        System.out.printf( "|  %-42s|%n", "     List of Backup Data");
+        System.out.printf("|  %-42s|%n", "     List of Backup Data");
         System.out.println("+-----+------------------------------------------+");
         for (int i = 0; i < files.length; i++)
-            System.out.printf("| %-3d | %-40s |%n", i+1, files[i].getName());
+            System.out.printf("| %-3d | %-40s |%n", i + 1, files[i].getName());
         System.out.println("+-----+------------------------------------------+");
 
-        System.out.print("=> Enter backup_id to restore: ");
-        int choice = new Scanner(System.in).nextInt() - 1;
-        if (choice < 0 || choice >= files.length) { System.out.println("Cancelled."); return; }
+        inputUtil input = new inputUtil();
+        int choice = input.inputId("=> Enter backup_id to restore: ") - 1;
+        if (choice < 0 || choice >= files.length) {
+            System.out.println("Cancelled.");
+            return;
+        }
 
         try (Connection con = DatabaseUtil.getConnection();
-             BufferedReader br = new BufferedReader(new FileReader(files[choice]))) {
+                BufferedReader br = new BufferedReader(new FileReader(files[choice]))) {
             String line;
             while ((line = br.readLine()) != null)
-                if (!line.trim().isEmpty()) con.createStatement().execute(line.trim());
+                if (!line.trim().isEmpty())
+                    con.createStatement().execute(line.trim());
             System.out.println(Color.green + "Database restore successful!" + Color.reset);
-        } catch (Exception e) { System.out.println("Restore failed: " + e.getMessage()); }
+        } catch (Exception e) {
+            System.out.println("Restore failed: " + e.getMessage());
+        }
     }
 
     public void backupProduct() {
         try (Connection con = DatabaseUtil.getConnection();
-             ResultSet rs = con.createStatement()
-                     .executeQuery("SELECT * FROM stock ORDER BY id")) {
+                ResultSet rs = con.createStatement()
+                        .executeQuery("SELECT * FROM stock ORDER BY id")) {
 
             String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             String file = "src/backup/Version1-product-backup-" + date + ".sql";

@@ -15,11 +15,9 @@ public class DatabaseUtil {
                             properties.getProperty("name"),
                             properties.getProperty("password")
                     );
-            //debug the properties
-//            System.out.println(properties.entrySet());
+
 
             if(conn.isValid(1)){
-                System.out.println("Connection is succeeded ");
                 return conn;
             }else {
                throw new RuntimeException("Unable to connect");

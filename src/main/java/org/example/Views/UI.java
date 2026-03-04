@@ -9,7 +9,6 @@ import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.Menu;
 import org.example.Utilities.inputUtil;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,24 +22,68 @@ public class UI {
     List<Product> productUpdate = new ArrayList<>();
     Menu menu = new Menu();
 
-    public void displayUI() throws SQLException {
+    int currentPage = 1;
 
+    public void displayUI() throws SQLException {
         while (true) {
+            // 1. Get current configuration and data
+            int displayRows = settingsService.getDisplayRows();
+            int totalRecords = productController.countAllProducts();
+            int totalPages = (int) Math.ceil((double) totalRecords / displayRows);
+            if (totalPages == 0)
+                totalPages = 1;
+            if (currentPage > totalPages)
+                currentPage = totalPages;
+            if (currentPage < 1)
+                currentPage = 1;
+
+            // 2. Fetch and display table
+            List<Product> products = productController.readProduct(currentPage, displayRows);
+            DisplayDataTable.displaytTable(products, currentPage, totalPages, totalRecords);
+
+            // 3. Display Menu
             menu.MenuMain();
-            String option = inputUtil.option(Color.blue + "==>Choose an option: " + Color.reset);
+            String option = inputUtil.option(Color.yellow + "=> Choose an option() : " + Color.reset);
 
             switch (option.toUpperCase()) {
+                // Pagination Commands
+                case "N": { // Next Page
+                    if (currentPage < totalPages)
+                        currentPage++;
+                    break;
+                }
+                case "P": { // Previous Page
+                    if (currentPage > 1)
+                        currentPage--;
+                    break;
+                }
+                case "F": { // First Page
+                    currentPage = 1;
+                    break;
+                }
+                case "L": { // Last Page
+                    currentPage = totalPages;
+                    break;
+                }
+                case "G": { // Goto Page
+                    int gotoPage = inputUtil.inputId("Enter page number to go: ");
+                    if (gotoPage >= 1 && gotoPage <= totalPages) {
+                        currentPage = gotoPage;
+                    } else {
+                        System.out.println(Color.red + "Invalid page number!" + Color.reset);
+                    }
+                    break;
+                }
 
+                // Action Commands
                 case "W": {
                     productWrite = productController.writeProduct();
                     break;
                 }
-                case "R": {
-                    int displayRows = settingsService.getDisplayRows();
-                    readProduct = productController.readProduct(displayRows);
-                    System.out.println(Color.blue + "Displaying " + readProduct.size() + " rows (limit: " + displayRows
-                            + ")" + Color.reset);
-                    DisplayDataTable.displaytTable(readProduct);
+                case "R": { // Read (id)
+                    int id = inputUtil.inputId("Enter product ID to read: ");
+                    productController.searchByIdProduct(id);
+                    inputUtil.pressEnterToContinue();
                     break;
                 }
                 case "U": {
@@ -57,85 +100,58 @@ public class UI {
                     }
                     break;
                 }
-
-                case "BA": {
-                    productController.backupProduct();
+                case "S": {
+                    String name = inputUtil.Inputname("Input name for search: ");
+                    productController.searchProduct(name);
+                    inputUtil.pressEnterToContinue();
                     break;
                 }
-
-                case "RE": {
-                    productController.restoreProduct();
-                }
-
                 case "SE": {
                     int rows = inputUtil.inputDisplayRows(
                             "Enter number of rows to display (current: " + settingsService.getDisplayRows() + "): ");
                     settingsService.setDisplayRows(rows);
-                    System.out.println(Color.green + "✓ Display rows updated! Next time you read (R), it will show "
-                            + rows + " rows." + Color.reset);
+                    currentPage = 1; // Reset to page 1 when row limit changes
                     break;
                 }
-                case "UN": {
-                    option = inputUtil.option("Choose 'ui' for unsaved insert or 'uu' for unsaved update: ");
-                    if (option.equalsIgnoreCase("ui")) {
-                        productController.unSaveProduct(productWrite, option);
-                    } else if (option.equalsIgnoreCase("uu")) {
-                        productController.unSaveProduct(productUpdate, option);
-                    }
-                    break;
-                }
-
-                case "S": {
-                    String name = inputUtil.Inputname("Input name for search: ");
-                    productController.searchProduct(name);
-                    break;
-                }
-
                 case "SA": {
                     if (productWrite.isEmpty() && productUpdate.isEmpty()) {
                         System.out.println(Color.yellow + "⚠ No product to save. Please write or update product first."
                                 + Color.reset);
                         break;
                     }
-                    System.out.println("'ui' for saving insert product  and 'su' for update product or 'b' for back");
+                    System.out.println("'si' for saving insert product and 'su' for update product or 'b' for back");
                     String choose = inputUtil.option("==> Choose an option: ");
-                    switch (choose.toLowerCase()) {
-                        case "si": {
-                            if (productWrite.isEmpty()) {
-                                System.out.println(Color.red + "✗ No insert data available." + Color.reset);
-                                break;
-                            }
-                            productController.saveProduct(productWrite, "si");
-                            break;
-                        }
-
-                        case "su": {
-                            if (productUpdate.isEmpty()) {
-                                System.out.println(Color.red + "✗ No update data available." + Color.reset);
-                                break;
-                            }
-                            productController.saveProduct(productUpdate, "su");
-                            unsaveUpdate.clear();   // optional
-                            break;
-                        }
-
-                        case "b": {
-                            break;
-                        }
-
-                        default: {
-                            System.out.println(Color.red + "✗ Invalid Option." + Color.reset);
-                        }
+                    if (choose.toLowerCase().equals("si")) {
+                        productController.saveProduct(productWrite, "si");
+                    } else if (choose.toLowerCase().equals("su")) {
+                        productController.saveProduct(productUpdate, "su");
                     }
                     break;
                 }
-
-                case "B":
+                case "UN": {
+                    String unOption = inputUtil.option("Choose 'ui' for unsaved insert or 'uu' for unsaved update: ");
+                    if (unOption.equalsIgnoreCase("ui")) {
+                        productController.unSaveProduct(productWrite, unOption);
+                    } else if (unOption.equalsIgnoreCase("uu")) {
+                        productController.unSaveProduct(productUpdate, unOption);
+                    }
+                    inputUtil.pressEnterToContinue();
+                    break;
+                }
+                case "BA": {
+                    productController.backupProduct();
+                    inputUtil.pressEnterToContinue();
+                    break;
+                }
+                case "RE": {
+                    productController.restoreProduct();
+                    inputUtil.pressEnterToContinue();
+                    break;
+                }
                 case "E": {
                     System.out.println(Color.blue + "Exiting program..." + Color.reset);
                     System.exit(0);
                 }
-
                 default: {
                     System.out.println(Color.red + "✗ Invalid Option..." + Color.reset);
                 }

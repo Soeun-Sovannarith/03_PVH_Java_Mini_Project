@@ -102,4 +102,9 @@ public class inputUtil {
             }
         }
     }
+
+    public void pressEnterToContinue() {
+        System.out.print(Color.yellow + "Press Enter to continue..." + Color.reset);
+        sc.nextLine();
+    }
 }
