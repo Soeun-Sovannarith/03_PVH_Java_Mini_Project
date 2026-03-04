@@ -9,7 +9,8 @@ public class Product {
     private String rowState;
 
     public Product(String name, double price, int qty, String import_date){
-
+        ++idIndex;
+        this.id=idIndex;
         this.name=name;
         this.price=price;
         this.qty=qty;
@@ -17,6 +18,7 @@ public class Product {
         this.rowState="default";
     }
     public Product(int id, String name, double price, int qty, String import_date){
+
         this.id=id;
         this.name=name;
         this.price=price;
