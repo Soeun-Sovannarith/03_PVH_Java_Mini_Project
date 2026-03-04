@@ -17,19 +17,33 @@ This project uses environment variables to securely manage database credentials.
    DB_USERNAME=your_username
    DB_PASSWORD=your_password
    ```
+### Script for Database 
+stock table
 
-### Running the Project
+```sql  
+CREATE TABLE IF NOT EXISTS stock (
+id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+name VARCHAR(250) NOT NULL,
+price DECIMAL(10,2) NOT NULL,
+qty INT NOT NULL,
+import_date  VARCHAR(250) NOT NULL
+);
 
-```bash
-# Build the project
-mvn clean compile
 
-# Package the project
-mvn clean package
+``` 
 
-# Run the application
-mvn exec:java -Dexec.mainClass="org.example.Main"
-```
+
+app setting for row recovery
+```sql  
+CREATE TABLE IF NOT EXISTS app_settings (
+    id SERIAL PRIMARY KEY,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value VARCHAR(255) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+``` 
+
 
 ## Dependencies
 

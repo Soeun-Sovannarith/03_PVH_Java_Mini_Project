@@ -6,13 +6,19 @@ import java.util.regex.Pattern;
 public class ProductValidation {
 
     // Regex Constants
-    public static final String NAME_REGEX = "^[a-zA-Z][a-zA-Z ]*$";
+    public static final String NAME_REGEX = "^[a-zA-Z][a-zA-Z0-9 ]*$";
     public static final String PRICE_REGEX = "^[0-9]+(\\.[0-9]{1,2})?$";
-    public static final String QTY_REGEX = "^[0-9]+$";
+    public static final String QTY_REGEX = "^[0-9]{1,5}$"; // Up to 5 digits (99,999)
     public static final String ID_REGEX = "^[0-9]+$";
     public static final String ALPHA_REGEX = "^[a-zA-Z]+$";
     public static final String YES_NO_REGEX = "^[yYnN]$";
     public static final String DATE_REGEX = "^\\d{4}-\\d{2}-\\d{2}$";
+
+    // Business Constraints
+    public static final double MAX_PRICE = 100000.0; // Maximum price: 100,000
+    public static final double MIN_PRICE = 0.01; // Minimum price: 1 cent
+    public static final int MAX_QUANTITY = 10000; // Maximum quantity: 10,000 units
+    public static final int MIN_QUANTITY = 1; // Minimum quantity: 1 unit
 
     // Validation Methods
 
@@ -23,7 +29,7 @@ public class ProductValidation {
         }
         if (!Pattern.matches(NAME_REGEX, name.trim())) {
             System.out.println(Color.red
-                    + " Error: Invalid product name! (Letters, numbers, and spaces only, must start with alphanumeric)"
+                    + " Error: Invalid product name! (Letters, numbers, and spaces allowed, but MUST start with a letter)"
                     + Color.reset);
             return false;
         }
@@ -43,8 +49,12 @@ public class ProductValidation {
     }
 
     public static boolean validatePrice(double price) {
-        if (price < 0) {
-            System.out.println(Color.red + " Error: Price cannot be negative!" + Color.reset);
+        if (price < MIN_PRICE) {
+            System.out.println(Color.red + " Error: Price must be at least $" + MIN_PRICE + "!" + Color.reset);
+            return false;
+        }
+        if (price > MAX_PRICE) {
+            System.out.println(Color.red + " Error: Price cannot exceed $" + MAX_PRICE + "!" + Color.reset);
             return false;
         }
         return true;
@@ -63,8 +73,12 @@ public class ProductValidation {
     }
 
     public static boolean validateQuantity(int qty) {
-        if (qty < 0) {
-            System.out.println(Color.red + " Error: Quantity cannot be negative!" + Color.reset);
+        if (qty < MIN_QUANTITY) {
+            System.out.println(Color.red + " Error: Quantity must be at least " + MIN_QUANTITY + "!" + Color.reset);
+            return false;
+        }
+        if (qty > MAX_QUANTITY) {
+            System.out.println(Color.red + " Error: Quantity cannot exceed " + MAX_QUANTITY + " units!" + Color.reset);
             return false;
         }
         return true;
