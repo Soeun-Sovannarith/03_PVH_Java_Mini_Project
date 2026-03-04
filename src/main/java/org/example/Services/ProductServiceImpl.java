@@ -198,6 +198,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public void searchByIdProduct(int id) throws SQLException {
+
+    }
+
+    @Override
     public void searchProduct(String name) throws SQLException {
         List<Product> productByName = new ArrayList<>();
         Connection con = DatabaseUtil.getConnection();
