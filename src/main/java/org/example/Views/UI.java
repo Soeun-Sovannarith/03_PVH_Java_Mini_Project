@@ -13,24 +13,21 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class UI {
-    Scanner scanner = new Scanner(System.in);
     ProductController productController = new ProductController();
     SettingService settingsService = new SettingsServiceImpl();
     inputUtil inputUtil = new inputUtil();
-    List<Product> readProduct=new ArrayList<>();
+    List<Product> readProduct = new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
-    List<Product> productUpdate=new ArrayList<>();
+    List<Product> productUpdate = new ArrayList<>();
     Menu menu = new Menu();
 
     public void displayUI() throws SQLException {
 
         while (true) {
-
             menu.MenuMain();
-            String option = inputUtil.option(Color.blue + "Choose an option: " + Color.reset);
+            String option = inputUtil.option(Color.blue + "==>Choose an option: " + Color.reset);
 
             switch (option.toUpperCase()) {
 
@@ -38,28 +35,24 @@ public class UI {
                     productWrite = productController.writeProduct();
                     break;
                 }
-                case "R":{
+                case "R": {
                     int displayRows = settingsService.getDisplayRows();
                     readProduct = productController.readProduct(displayRows);
-                    System.out.println(Color.blue + "Displaying " + readProduct.size() + " rows (limit: " + displayRows + ")" + Color.reset);
+                    System.out.println(Color.blue + "Displaying " + readProduct.size() + " rows (limit: " + displayRows
+                            + ")" + Color.reset);
                     DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
-                case "U":{
-
-                    int id=inputUtil.qty("Enter product id: ");
-                    productUpdate=  productController.updateProduct(id);
+                case "U": {
+                    int id = inputUtil.inputId("Enter product ID to update: ");
+                    productUpdate = productController.updateProduct(id);
                     break;
                 }
-
                 case "D": {
-                    System.out.print("Enter product ID to delete: ");
-                    int id = scanner.nextInt();
-                    scanner.nextLine();
+                    int id = inputUtil.inputId("Enter product ID to delete: ");
                     productController.searchByIdProduct(id);
-                    System.out.print("Are you sure you want to delete this product? " + id + "(Y/N) ");
-                    String choice = scanner.nextLine();
-                    if(choice.equalsIgnoreCase("Y")) {
+                    String choice = inputUtil.InputYN();
+                    if (choice.equalsIgnoreCase("y")) {
                         productController.deleteProduct(id);
                     }
                     break;
@@ -75,67 +68,54 @@ public class UI {
                 }
 
                 case "SE": {
-                    System.out.print("Enter number of rows to display (current: " + settingsService.getDisplayRows() + "): ");
-                    try {
-                        int rows = scanner.nextInt();
-                        scanner.nextLine(); // consume newline
-
-                        if (rows > 0) {
-                            settingsService.setDisplayRows(rows);
-                            System.out.println(Color.green + "Display rows updated! Next time you read (R), it will show " + rows + " rows." + Color.reset);
-                        } else {
-                            System.out.println(Color.red + "Please enter a positive number." + Color.reset);
-                        }
-                    } catch (Exception e) {
-                        scanner.nextLine(); // clear buffer
-                        System.out.println(Color.red + "Invalid input. Please enter a number." + Color.reset);
-                    }
+                    int rows = inputUtil.inputDisplayRows(
+                            "Enter number of rows to display (current: " + settingsService.getDisplayRows() + "): ");
+                    settingsService.setDisplayRows(rows);
+                    System.out.println(Color.green + "✓ Display rows updated! Next time you read (R), it will show "
+                            + rows + " rows." + Color.reset);
                     break;
                 }
-                case "UN":{
-                     option=inputUtil.option("Choose option:");
-                    if (option.equalsIgnoreCase("ui")){
-                         productController.unSaveProduct(productWrite,option);
+                case "UN": {
+                    option = inputUtil.option("Choose 'ui' for unsaved insert or 'uu' for unsaved update: ");
+                    if (option.equalsIgnoreCase("ui")) {
+                        productController.unSaveProduct(productWrite, option);
                     } else if (option.equalsIgnoreCase("uu")) {
-                        productController.unSaveProduct(productUpdate,option);
+                        productController.unSaveProduct(productUpdate, option);
                     }
                     break;
                 }
 
                 case "S": {
-                    System.out.print("Input name for search: ");
-                    String name = scanner.nextLine().trim();
+                    String name = inputUtil.Inputname("Input name for search: ");
                     productController.searchProduct(name);
                     break;
                 }
 
                 case "SA": {
                     if (productWrite.isEmpty() && productUpdate.isEmpty()) {
-                        System.out.println("No product to save. Please write or update product first.");
+                        System.out.println(Color.yellow + "⚠ No product to save. Please write or update product first."
+                                + Color.reset);
                         break;
                     }
-                    System.out.println("'si' for insert | 'su' for update | 'b' for back");
-                    String choose = inputUtil.option("=> Choose an option: ");
+                    System.out.println("'ui' for saving insert product  and 'su' for update product or 'b' for back");
+                    String choose = inputUtil.option("==> Choose an option: ");
                     switch (choose.toLowerCase()) {
                         case "si": {
-
                             if (productWrite.isEmpty()) {
-                                System.out.println("No insert data available.");
+                                System.out.println(Color.red + "✗ No insert data available." + Color.reset);
                                 break;
                             }
-
                             productController.saveProduct(productWrite, "si");
                             break;
                         }
 
                         case "su": {
-
                             if (productUpdate.isEmpty()) {
-                                System.out.println("No update data available.");
+                                System.out.println(Color.red + "✗ No update data available." + Color.reset);
                                 break;
                             }
-
                             productController.saveProduct(productUpdate, "su");
+                            unsaveUpdate.clear();   // optional
                             break;
                         }
 
@@ -144,24 +124,20 @@ public class UI {
                         }
 
                         default: {
-                            System.out.println("Invalid Input...");
+                            System.out.println(Color.red + "✗ Invalid Option." + Color.reset);
                         }
                     }
                     break;
                 }
 
-
-                case "B": {
-                    System.out.println("Exiting program...");
-                    System.exit(0);
-                }
-                case"E": {
-                    System.out.println("Exiting program...");
+                case "B":
+                case "E": {
+                    System.out.println(Color.blue + "Exiting program..." + Color.reset);
                     System.exit(0);
                 }
 
                 default: {
-                    System.out.println("Invalid Option...");
+                    System.out.println(Color.red + "✗ Invalid Option..." + Color.reset);
                 }
             }
         }
