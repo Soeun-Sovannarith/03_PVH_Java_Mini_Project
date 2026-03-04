@@ -40,4 +40,12 @@ public class ProductController {
     public void searchByIdProduct (int id) throws SQLException {
         productService.searchByIdProduct(id);
     }
+
+    public void backupProduct() throws SQLException {
+        productService.backupProduct();
+    }
+
+    public void restoreProduct() throws SQLException {
+        productService.restoreProduct();
+    }
 }

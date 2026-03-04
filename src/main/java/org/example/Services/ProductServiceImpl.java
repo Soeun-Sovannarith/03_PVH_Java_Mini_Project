@@ -1,15 +1,21 @@
 package org.example.Services;
 
 import org.example.Models.Product;
+import org.example.Utilities.Color;
 import org.example.Utilities.DatabaseUtil;
 import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.inputUtil;
 
+import java.io.*;
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
+
 public class ProductServiceImpl implements ProductService {
     List<Product> productWrite=new ArrayList<>();
     List<Product> productsUpdate = new ArrayList<>();
@@ -272,5 +278,53 @@ public class ProductServiceImpl implements ProductService {
 
     
 
+    public void restoreProduct() {
+        File[] files = new File("src/backup/").listFiles((d, n) -> n.endsWith(".sql"));
+        if (files == null || files.length == 0) { System.out.println("No backup found."); return; }
+
+        System.out.println("+-----+------------------------------------------+");
+        System.out.printf( "|  %-42s|%n", "     List of Backup Data");
+        System.out.println("+-----+------------------------------------------+");
+        for (int i = 0; i < files.length; i++)
+            System.out.printf("| %-3d | %-40s |%n", i+1, files[i].getName());
+        System.out.println("+-----+------------------------------------------+");
+
+        System.out.print("=> Enter backup_id to restore: ");
+        int choice = new Scanner(System.in).nextInt() - 1;
+        if (choice < 0 || choice >= files.length) { System.out.println("Cancelled."); return; }
+
+        try (Connection con = DatabaseUtil.getConnection();
+             BufferedReader br = new BufferedReader(new FileReader(files[choice]))) {
+            String line;
+            while ((line = br.readLine()) != null)
+                if (!line.trim().isEmpty()) con.createStatement().execute(line.trim());
+            System.out.println(Color.green + "Database restore successful!" + Color.reset);
+        } catch (Exception e) { System.out.println("Restore failed: " + e.getMessage()); }
+    }
+
+    public void backupProduct() {
+        try (Connection con = DatabaseUtil.getConnection();
+             ResultSet rs = con.createStatement()
+                     .executeQuery("SELECT * FROM stock ORDER BY id")) {
+
+            String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            String file = "src/backup/Version1-product-backup-" + date + ".sql";
+            new File("src/backup/").mkdirs();
+
+            PrintWriter pw = new PrintWriter(new FileWriter(file));
+            pw.println("DELETE FROM stock;");
+            while (rs.next()) {
+                pw.printf("INSERT INTO stock VALUES (%d,'%s',%.2f,%d,'%s');%n",
+                        rs.getInt("id"), rs.getString("name"),
+                        rs.getDouble("price"), rs.getInt("qty"),
+                        rs.getString("import_date"));
+            }
+            pw.close();
+            System.out.println("Database backup successful!");
+
+        } catch (Exception e) {
+            System.out.println("Backup failed: " + e.getMessage());
+        }
+    }
 
 }
