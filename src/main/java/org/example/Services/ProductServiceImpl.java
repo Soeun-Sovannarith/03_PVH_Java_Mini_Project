@@ -14,17 +14,50 @@ public class ProductServiceImpl implements ProductService {
     List<Product> productWrite=new ArrayList<>();
     List<Product> productsUpdate = new ArrayList<>();
     public static int idDatabase=0;
+    private int currentId = -1;
     @Override
     public List<Product> writeProduct() {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd ");
-        Date now = new Date();
-        String date= sdfDate.format(now);
-        inputUtil input =new inputUtil();
-        String name=input.Inputname("Input Product Name:");
-        double price=input.inputPrice("Input Unit Price :");
-        int qty=input.qty("Input QTY:");
-        productWrite.add(new Product(name,price,qty,date));
+
+        try {
+
+            int nextId = getNextId();
+            if (currentId == -1) {
+                currentId = getNextId();
+            } else {
+                currentId++;
+            }
+            System.out.println("New Product ID = " + + currentId);
+
+            SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+            Date now = new Date();
+            String date = sdfDate.format(now);
+
+            inputUtil input = new inputUtil();
+
+            String name = input.Inputname("Input Product Name: ");
+            double price = input.inputPrice("Input Unit Price: ");
+            int qty = input.qty("Input QTY: ");
+
+            productWrite.add(new Product( name, price, qty, date));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         return productWrite;
+    }
+    private int getNextId() throws SQLException {
+        String sql = "SELECT COALESCE(MAX(id),0) + 1 AS next_id FROM stock";
+
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getInt("next_id");
+            }
+        }
+        return 1;
     }
 
     @Override
@@ -51,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
             } else if (option.equalsIgnoreCase("su")) {
 
                 String updateSQL = "UPDATE stock SET name=?, price=?, qty=?, import_date=? WHERE id=?";
-
+                 int count=0;
                 try (PreparedStatement pt = con.prepareStatement(updateSQL)) {
                     for (Product product : products) {
 
@@ -62,6 +95,8 @@ public class ProductServiceImpl implements ProductService {
                         pt.setInt(5, product.getId()); // FIXED
 
                         pt.executeUpdate();
+                        count++;
+                        System.out.println("Product "+count+" Updated Successfully ");
                     }
 
                     con.commit();
@@ -82,51 +117,67 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> update(int id) throws SQLException {
-        inputUtil input =new inputUtil();
-        Connection con=DatabaseUtil.getConnection();
-        List<Product> products = new ArrayList<>();
-        Statement st=con.createStatement();
-        ResultSet rs=st.executeQuery("SELECT * FROM stock ");
-        while (rs.next()) {
-            int idDB = rs.getInt("id");
-            if(idDB==id) {
-                idDatabase=idDB;
-                System.out.println("1.Name 2.Unit_price 3.qty 4.import_date");
-                int option=input.qty("Choose option :");
-                switch (option) {
-                    case 1:{
-                        String newName = input.Inputname("Enter your name: ");
-                        double unit_price=rs.getInt(3);
-                        int qty=rs.getInt(4);
-                        String import_date= rs.getString(5);
-                        products.add(new Product(newName,unit_price,qty,import_date));
-                    }break;
-                    case 2:{
-                        double unit_price=input.inputPrice("Change Unit Price  to:  ");
-                        String name=rs.getString(2);
-                        int qty=rs.getInt(4);
-                        String import_date=rs.getString(5);
-                        products.add(new Product(name,unit_price,qty,import_date));
-                    }break;
-                    case 3:{
-                        int qty=input.qty("Change Qty to:  ");
-                        String name=rs.getString(2);
-                        int unit_price=rs.getInt(3);
-                        String import_date=rs.getString(5);
-                        products.add(new Product(name,unit_price,qty,import_date));
-                    }
-                    default:{
-                        System.out.println("Invalid option");
-                    }
 
-                }
+        List<Product> selected = new ArrayList<>();
+        inputUtil input = new inputUtil();
 
+        String sql = "SELECT * FROM stock WHERE id=?";
+
+        try (Connection con = DatabaseUtil.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                System.out.println("Product not found!");
+                return selected;
             }
-        }
-        System.out.println("Update Success");
-        return products;
-    }
+            String name = rs.getString("name");
+            double price = rs.getDouble("price");
+            int qty = rs.getInt("qty");
+            String importDate = rs.getString("import_date"); // keep original
 
+            List<Product> display = new ArrayList<>();
+            display.add(new Product(id, name, price, qty, importDate));
+            DisplayDataTable.displaytTable(display);
+            System.out.print("1.Name  ");
+            System.out.print("2.Unit Price  ");
+            System.out.print("3.Qty  ");
+            System.out.print("4.All Fields  ");
+            System.out.print("5.Exit  ");
+
+            int choose = input.qty("\nChoose an option to update: ");
+
+            switch (choose) {
+                case 1 -> {
+                    name = input.Inputname("Input Product Name: ");
+                }
+                case 2 -> {
+                    price = input.inputPrice("Enter price: ");
+                }
+                case 3 -> {
+                    qty = input.qty("Input Quantity: ");
+                }
+                case 4 -> {
+                    name = input.Inputname("Input Product Name: ");
+                    price = input.inputPrice("Enter price: ");
+                    qty = input.qty("Input Quantity: ");
+                }
+                case 5 -> {
+                    System.out.println("Update cancelled.");
+                    return selected;
+                }
+                default -> {
+                    System.out.println("Invalid option");
+                    return selected;
+                }
+            }
+
+            selected.add(new Product(id, name, price, qty, importDate));
+        }
+
+        return selected;
+    }
 
     @Override
     public List<Product> readProduct() throws SQLException {

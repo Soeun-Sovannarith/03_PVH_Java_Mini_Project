@@ -26,7 +26,7 @@ public class UI {
 
         while (true) {
             menu.MenuMain();
-            String option = inputUtil.option(Color.blue + "Choose an option: " + Color.reset);
+            String option = inputUtil.option(Color.blue + "==>Choose an option: " + Color.reset);
 
             switch (option.toUpperCase()) {
 
@@ -47,7 +47,6 @@ public class UI {
                     productUpdate = productController.updateProduct(id);
                     break;
                 }
-
                 case "D": {
                     int id = inputUtil.inputId("Enter product ID to delete: ");
                     productController.searchByIdProduct(id);
@@ -88,8 +87,8 @@ public class UI {
                                 + Color.reset);
                         break;
                     }
-                    System.out.println("'si' for insert | 'su' for update | 'b' for back");
-                    String choose = inputUtil.option("=> Choose an option: ");
+                    System.out.println("'ui' for saving insert product  and 'su' for update product or 'b' for back");
+                    String choose = inputUtil.option("==> Choose an option: ");
                     switch (choose.toLowerCase()) {
                         case "si": {
                             if (productWrite.isEmpty()) {
@@ -106,6 +105,7 @@ public class UI {
                                 break;
                             }
                             productController.saveProduct(productUpdate, "su");
+                            unsaveUpdate.clear();   // optional
                             break;
                         }
 
