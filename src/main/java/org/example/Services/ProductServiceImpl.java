@@ -197,6 +197,8 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(products);
     }
 
+
+
     @Override
     public void searchProduct(String name) throws SQLException {
         List<Product> productByName = new ArrayList<>();
@@ -217,10 +219,7 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(productByName);
     }
 
-    @Override
-    public void recoveryrow(int id) throws SQLException {
-        
-    }
+    
 
 
 }
