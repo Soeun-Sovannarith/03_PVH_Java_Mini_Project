@@ -136,19 +136,5 @@ public class ProductValidation {
         return true;
     }
 
-    public static boolean validateDateFormat(String date) {
-        if (date == null || date.trim().isEmpty()) {
-            System.out.println(Color.red + " Error: Date cannot be empty!" + Color.reset);
-            return false;
-        }
-        if (!Pattern.matches(DATE_REGEX, date.trim())) {
-            System.out.println(Color.red + " Error: Invalid date format! (Use yyyy-MM-dd)" + Color.reset);
-            return false;
-        }
-        return true;
-    }
 
-    public static boolean validateProduct(String name, double price, int qty) {
-        return validateName(name) && validatePrice(price) && validateQuantity(qty);
-    }
 }

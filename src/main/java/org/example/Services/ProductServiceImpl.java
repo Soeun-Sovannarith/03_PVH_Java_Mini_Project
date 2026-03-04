@@ -18,6 +18,7 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
     List<Product> productWrite = new ArrayList<>();
     List<Product> productsUpdate = new ArrayList<>();
+
     public static int idDatabase = 0;
     private int currentId = -1;
 

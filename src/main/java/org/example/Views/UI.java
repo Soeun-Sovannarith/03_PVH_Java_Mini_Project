@@ -20,6 +20,7 @@ public class UI {
     List<Product> readProduct = new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
     List<Product> productUpdate = new ArrayList<>();
+    List<Product> unsaveUpdate = new ArrayList<>();
     Menu menu = new Menu();
 
     int currentPage = 1;
@@ -87,8 +88,13 @@ public class UI {
                     break;
                 }
                 case "U": {
-                    int id = inputUtil.inputId("Enter product ID to update: ");
-                    productUpdate = productController.updateProduct(id);
+                    int id = inputUtil.qty("Enter product id: ");
+                    List<Product> temp = productController.updateProduct(id);
+                    if (!temp.isEmpty()) {
+                        productUpdate.addAll(temp);
+                        unsaveUpdate.addAll(temp);
+                        System.out.println("Product added to Unsave Update list");
+                    }
                     break;
                 }
                 case "D": {
@@ -130,10 +136,10 @@ public class UI {
                 }
                 case "UN": {
                     String unOption = inputUtil.option("Choose 'ui' for unsaved insert or 'uu' for unsaved update: ");
-                    if (unOption.equalsIgnoreCase("ui")) {
-                        productController.unSaveProduct(productWrite, unOption);
-                    } else if (unOption.equalsIgnoreCase("uu")) {
-                        productController.unSaveProduct(productUpdate, unOption);
+                    if (unOption.equalsIgnoreCase("ui")){
+                        productController.unSaveProduct(productWrite,option);
+                    }else if(unOption.equalsIgnoreCase("uu")) {
+                        DisplayDataTable.displayUnsaveUpdateTable(unsaveUpdate);
                     }
                     inputUtil.pressEnterToContinue();
                     break;
