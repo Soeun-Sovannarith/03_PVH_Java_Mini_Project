@@ -7,6 +7,7 @@ public class Product {
     private int qty;
     private String import_date;
     private String rowState;
+    private static int idIndex=0;
 
     public Product(String name, double price, int qty, String import_date){
         ++idIndex;
