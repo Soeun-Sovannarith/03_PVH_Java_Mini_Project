@@ -197,10 +197,7 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(products);
     }
 
-    @Override
-    public void searchByIdProduct(int id) throws SQLException {
 
-    }
 
     @Override
     public void searchProduct(String name) throws SQLException {
