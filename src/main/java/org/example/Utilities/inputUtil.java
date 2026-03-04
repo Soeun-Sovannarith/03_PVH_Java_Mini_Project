@@ -1,101 +1,105 @@
 package org.example.Utilities;
 
+import org.example.Validation.ProductValidation;
 import java.util.Scanner;
-import java.util.regex.Pattern;
 
 public class inputUtil {
-    String rege="^[0-9]+$";
-    String nameRegex="^[a-zA-Z]+(\\\\s+[a-zA-Z0-9]+)*$";
-    String optionRegex="^[a-zA-Z]+$";
+    private static final Scanner sc = new Scanner(System.in);
 
-    static Scanner sc=new Scanner(System.in);
-    String regeDouble="[0-9]{1,13}(.[0-9]*)$";
-    String YesNo= "^[y|n]$";
-
-    public String address(String text){
+    public String address(String text) {
         System.out.print(text);
-        String date;
-        date= sc.next();
-        return date;
+        return sc.nextLine();
     }
 
-    public  String InputYN() {
+    public String InputYN() {
         String answer;
-        while (true){
-            System.out.println(Color.green+"=>Do you want to cotineu? (y/n):"+ Color.reset);
-            answer= sc.next().trim().toLowerCase();
-            if (Pattern.matches(YesNo, answer)) {
+        while (true) {
+            System.out.print(Color.green + "=> Do you want to continue? (y/n): " + Color.reset);
+            answer = sc.nextLine().trim();
+            if (ProductValidation.validateYesNo(answer)) {
                 break;
-            } else {
-                System.out.println(Color.red + "Invalid input. Please enter a valid number." + Color.reset);
             }
         }
-        return  answer;
+        return answer.toLowerCase();
     }
 
-    public int qty(String text ){
+    public int qty(String text) {
         String number;
-        do {
+        while (true) {
             System.out.print(text);
-            number =sc.next();
-            if (Pattern.matches(rege, number)){
-                break;
-            }else {
-                System.out.println(Color.red+"input only number"+ Color.reset);
+            number = sc.nextLine().trim();
+            if (ProductValidation.validateQuantityFormat(number)) {
+                int qty = Integer.parseInt(number);
+                if (ProductValidation.validateQuantity(qty)) {
+                    return qty;
+                }
             }
-        }while (true);
-
-        return  Integer.parseInt(number);
+        }
     }
 
-    public String Inputname(String text){
+    public String Inputname(String text) {
         String name;
-        do {
+        while (true) {
             System.out.print(text);
-            name = sc.next();
-            if (Pattern.matches(nameRegex,name)){
+            name = sc.nextLine().trim();
+            if (ProductValidation.validateName(name)) {
                 break;
-            }else {
-                System.out.println(Color.red+"You can input number....."+ Color.reset);
             }
-        }while (true);
-
+        }
         return name;
     }
 
-
-    public  String option(String text){
-        String name;
-        do {
+    public String option(String text) {
+        String opt;
+        while (true) {
             System.out.print(text);
-            name = sc.next();
-            if (Pattern.matches(optionRegex,name)){
+            opt = sc.nextLine().trim();
+            if (ProductValidation.validateOption(opt)) {
                 break;
-            }else {
-                System.out.println(Color.red+"You can input number....."+ Color.reset);
             }
-        }while (true);
-
-        return name;
+        }
+        return opt;
     }
 
-    public double inputPrice(String text){
+    public double inputPrice(String text) {
         String balance;
-        do {
+        while (true) {
             System.out.print(text);
-            sc.nextLine();
-            balance=sc.next();
-
-            if (Pattern.matches(regeDouble, balance)){
-                break;
-            }else {
-                System.out.println(Color.red+"Invalid data....."+ Color.reset);
+            balance = sc.nextLine().trim();
+            if (ProductValidation.validatePriceFormat(balance)) {
+                double price = Double.parseDouble(balance);
+                if (ProductValidation.validatePrice(price)) {
+                    return price;
+                }
             }
-        }while (true);
-        return Double.parseDouble(balance);
+        }
     }
 
+    public int inputId(String text) {
+        String idStr;
+        while (true) {
+            System.out.print(text);
+            idStr = sc.nextLine().trim();
+            if (ProductValidation.validateIdFormat(idStr)) {
+                int id = Integer.parseInt(idStr);
+                if (ProductValidation.validateId(id)) {
+                    return id;
+                }
+            }
+        }
+    }
 
-
-
+    public int inputDisplayRows(String text) {
+        String rowsStr;
+        while (true) {
+            System.out.print(text);
+            rowsStr = sc.nextLine().trim();
+            if (ProductValidation.validateQuantityFormat(rowsStr)) {
+                int rows = Integer.parseInt(rowsStr);
+                if (ProductValidation.validateDisplayRows(rows)) {
+                    return rows;
+                }
+            }
+        }
+    }
 }

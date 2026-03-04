@@ -219,10 +219,7 @@ public class ProductServiceImpl implements ProductService {
         DisplayDataTable.displaytTable(productByName);
     }
 
-    @Override
-    public void recoveryrow(int id) throws SQLException {
-        
-    }
+    
 
 
 }
