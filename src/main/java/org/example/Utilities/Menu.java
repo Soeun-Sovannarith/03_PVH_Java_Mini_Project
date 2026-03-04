@@ -37,7 +37,7 @@ public class Menu {
         table.addCell(centerText(Color.yellow+"CHOOSE FOR USE FEATURE"+ Color.reset, 150), 5);
 
         // Feature selection row 2
-        table.addCell(centerText(Color.blue+"W)"+ Color.reset+" Write", 30));
+        table.addCell(centerText("W) Write", 30));
         table.addCell(centerText("R) Read (id)", 30));
         table.addCell(centerText("U) Update", 30));
         table.addCell(centerText("D) Delete", 30));
