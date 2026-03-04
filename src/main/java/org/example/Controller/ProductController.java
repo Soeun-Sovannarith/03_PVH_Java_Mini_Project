@@ -23,6 +23,9 @@ public class ProductController {
     public List<Product> readProduct() throws SQLException {
         return productService.readProduct();
     }
+    public List<Product> updateProduct(int id) throws SQLException {
+        return productService.update(id);
+    }
 
     public List<Product> readProduct(int limit) throws SQLException {
         return productService.readProduct(limit);
