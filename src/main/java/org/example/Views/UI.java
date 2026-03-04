@@ -22,6 +22,7 @@ public class UI {
     List<Product> readProduct=new ArrayList<>();
     List<Product> productWrite = new ArrayList<>();
     List<Product> productUpdate=new ArrayList<>();
+    List<Product> unsaveUpdate = new ArrayList<>();
     Menu menu = new Menu();
 
     public void displayUI() throws SQLException {
@@ -29,7 +30,7 @@ public class UI {
         while (true) {
 
             menu.MenuMain();
-            String option = inputUtil.option(Color.blue + "Choose an option: " + Color.reset);
+            String option = inputUtil.option(Color.blue + "==>Choose an option: " + Color.reset);
 
             switch (option.toUpperCase()) {
 
@@ -44,13 +45,18 @@ public class UI {
                     DisplayDataTable.displaytTable(readProduct);
                     break;
                 }
-                case "U":{
+                case "U": {
+                    int id = inputUtil.qty("Enter product id: ");
 
-                    int id=inputUtil.qty("Enter product id: ");
-                    productUpdate=  productController.updateProduct(id);
+                    List<Product> temp = productController.updateProduct(id);
+
+                    if (!temp.isEmpty()) {
+                        productUpdate.addAll(temp);
+                        unsaveUpdate.addAll(temp);
+                        System.out.println("Product added to Unsave Update list");
+                    }
                     break;
                 }
-
                 case "D": {
                     System.out.print("Enter product ID to delete: ");
                     int id = scanner.nextInt();
@@ -83,11 +89,12 @@ public class UI {
                     break;
                 }
                 case "UN":{
-                     option=inputUtil.option("Choose option:");
+                    System.out.println("'ui' for viewing insert product and 'uu' for viewing update product or 'b' for back to menu.");
+                     option=inputUtil.option("===>Enter your option():");
                     if (option.equalsIgnoreCase("ui")){
                          productController.unSaveProduct(productWrite,option);
-                    } else if (option.equalsIgnoreCase("uu")) {
-                        productController.unSaveProduct(productUpdate,option);
+                    }else if(option.equalsIgnoreCase("uu")) {
+                        DisplayDataTable.displayUnsaveUpdateTable(unsaveUpdate);
                     }
                     break;
                 }
@@ -104,10 +111,10 @@ public class UI {
                         System.out.println("No product to save. Please write or update product first.");
                         break;
                     }
-                    System.out.println("'si' for insert | 'su' for update | 'b' for back");
-                    String choose = inputUtil.option("=> Choose an option: ");
+                    System.out.println("'ui' for saving insert product  and 'su' for update product or 'b' for back");
+                    String choose = inputUtil.option("==> Choose an option: ");
                     switch (choose.toLowerCase()) {
-                        case "si": {
+                        case "ui": {
 
                             if (productWrite.isEmpty()) {
                                 System.out.println("No insert data available.");
@@ -118,14 +125,13 @@ public class UI {
                             break;
                         }
 
-                        case "su": {
-
+                        case "uu": {
                             if (productUpdate.isEmpty()) {
                                 System.out.println("No update data available.");
                                 break;
                             }
-
                             productController.saveProduct(productUpdate, "su");
+                            unsaveUpdate.clear();   // optional
                             break;
                         }
 
