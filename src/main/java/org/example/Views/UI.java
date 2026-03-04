@@ -9,6 +9,7 @@ import org.example.Utilities.DisplayDataTable;
 import org.example.Utilities.Menu;
 import org.example.Utilities.inputUtil;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +63,15 @@ public class UI {
                         productController.deleteProduct(id);
                     }
                     break;
+                }
+
+                case "BA": {
+                    productController.backupProduct();
+                    break;
+                }
+
+                case "RE": {
+                    productController.restoreProduct();
                 }
 
                 case "SE": {

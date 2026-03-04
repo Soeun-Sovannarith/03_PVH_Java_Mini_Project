@@ -2,6 +2,7 @@ package org.example.Services;
 
 import org.example.Models.Product;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -17,4 +18,6 @@ public interface ProductService {
   void searchByIdProduct(int id) throws SQLException;
   void searchProduct(String name) throws SQLException;
   void recoveryrow(int id) throws SQLException;
+  void backupProduct() throws SQLException;
+  void restoreProduct() throws SQLException;
 }
