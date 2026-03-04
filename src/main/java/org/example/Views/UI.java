@@ -57,6 +57,7 @@ public class UI {
 
                 case "SA": {
 
+
                     if (productWrite.isEmpty()) {
                         System.out.println("No product to save. Please write product first.");
                         break;

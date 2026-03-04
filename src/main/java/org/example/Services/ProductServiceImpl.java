@@ -100,4 +100,14 @@ public class ProductServiceImpl implements ProductService {
         return products;
     }
 
+    @Override
+    public void deleteProduct(int id) throws SQLException {
+
+    }
+
+    @Override
+    public void searchProduct(String name) throws SQLException {
+
+    }
+
 }

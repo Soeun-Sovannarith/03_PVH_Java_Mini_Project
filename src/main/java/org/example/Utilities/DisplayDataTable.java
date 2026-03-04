@@ -17,7 +17,7 @@ public class DisplayDataTable {
         table.setColumnWidth(4,30,30);
         table.addCell("ID");
         table.addCell("Name" );
-        table.addCell("Utit Price" );
+        table.addCell("Unit Price" );
         table.addCell("Qty" );
         table.addCell("Import Date" );
         products.forEach((w)->{
