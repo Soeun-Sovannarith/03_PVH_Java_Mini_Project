@@ -53,7 +53,6 @@ public class ProductServiceImpl implements ProductService {
                 String updateSQL = "UPDATE stock SET name=?, price=?, qty=?, import_date=? WHERE id=?";
 
                 try (PreparedStatement pt = con.prepareStatement(updateSQL)) {
-
                     for (Product product : products) {
 
                         pt.setString(1, product.getName());
@@ -76,25 +75,87 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    @Override
+    public void unSave(List<Product> products, String option) {
+             DisplayDataTable.displaytTable(products);
+    }
+
+    @Override
+    public List<Product> update(int id) throws SQLException {
+        inputUtil input =new inputUtil();
+        Connection con=DatabaseUtil.getConnection();
+        List<Product> products = new ArrayList<>();
+        Statement st=con.createStatement();
+        ResultSet rs=st.executeQuery("SELECT * FROM stock ");
+        while (rs.next()) {
+            int idDB = rs.getInt("id");
+            if(idDB==id) {
+                idDatabase=idDB;
+                System.out.println("1.Name 2.Unit_price 3.qty 4.import_date");
+                int option=input.qty("Choose option :");
+                switch (option) {
+                    case 1:{
+                        String newName = input.Inputname("Enter your name: ");
+                        double unit_price=rs.getInt(3);
+                        int qty=rs.getInt(4);
+                        String import_date= rs.getString(5);
+                        products.add(new Product(newName,unit_price,qty,import_date));
+                    }break;
+                    case 2:{
+                        double unit_price=input.inputPrice("Change Unit Price  to:  ");
+                        String name=rs.getString(2);
+                        int qty=rs.getInt(4);
+                        String import_date=rs.getString(5);
+                        products.add(new Product(name,unit_price,qty,import_date));
+                    }break;
+                    case 3:{
+                        int qty=input.qty("Change Qty to:  ");
+                        String name=rs.getString(2);
+                        int unit_price=rs.getInt(3);
+                        String import_date=rs.getString(5);
+                        products.add(new Product(name,unit_price,qty,import_date));
+                    }
+                    default:{
+                        System.out.println("Invalid option");
+                    }
+
+                }
+
+            }
+        }
+        System.out.println("Update Success");
+        return products;
+    }
+
 
     @Override
     public List<Product> readProduct() throws SQLException {
+        return readProduct(10); // Default to 10 rows
+    }
+
+    @Override
+    public List<Product> readProduct(int limit) throws SQLException {
 
         List<Product> products = new ArrayList<>();
 
+        String sql = "SELECT id, name, price, qty, import_date FROM stock LIMIT ?";
+
         try (Connection con = DatabaseUtil.getConnection();
-             Statement st = con.createStatement();
-             ResultSet rs = st.executeQuery("SELECT * FROM stock")) {
+             PreparedStatement pt = con.prepareStatement(sql)) {
 
-            while (rs.next()) {
+            pt.setInt(1, limit);
 
-                int id = rs.getInt("id");
-                String name = rs.getString("name");
-                double price = rs.getDouble("price");
-                int qty = rs.getInt("qty");
-                String import_date = rs.getString("import_date");
+            try (ResultSet rs = pt.executeQuery()) {
+                while (rs.next()) {
 
-                products.add(new Product(id, name, price, qty, import_date));
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    double price = rs.getDouble("price");
+                    int qty = rs.getInt("qty");
+                    String import_date = rs.getString("import_date");
+
+                    products.add(new Product(id, name, price, qty, import_date));
+                }
             }
         }
         return products;
@@ -102,6 +163,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void deleteProduct(int id) throws SQLException {
+<<<<<<< HEAD
 
     }
 
@@ -110,4 +172,65 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+=======
+        List<Product> products= new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String deleteSQL = "DELETE FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(deleteSQL)) {
+            pt.setInt(1, id);
+            int rowsAffected = pt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Delete Success");
+            }else  {
+                System.out.println("Delete Failed");
+            }
+        }
+    }
+
+    @Override
+    public void searchByIdProduct(int id) throws SQLException {
+        List<Product> products= new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String searchByIdSQL = "SELECT * FROM stock WHERE id=?";
+        try (PreparedStatement pt = con.prepareStatement(searchByIdSQL)) {
+            pt.setInt(1, id);
+            ResultSet rs = pt.executeQuery();
+            while (rs.next()) {
+                int idProduct = rs.getInt("id");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                products.add(new Product(idProduct, name, price, qty, import_date));
+            }
+        }
+        DisplayDataTable.displaytTable(products);
+    }
+
+
+
+    @Override
+    public void searchProduct(String name) throws SQLException {
+        List<Product> productByName = new ArrayList<>();
+        Connection con = DatabaseUtil.getConnection();
+        String selectSQL = "SELECT * FROM stock WHERE name ILIKE ?";
+        try (PreparedStatement ps = con.prepareStatement(selectSQL)) {
+            ps.setString(1, name + '%');
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nameproduct = rs.getString("name");
+                double price = rs.getDouble("price");
+                int qty = rs.getInt("qty");
+                String import_date = rs.getString("import_date");
+                productByName.add(new Product(id, nameproduct, price, qty, import_date));
+            }
+        }
+        DisplayDataTable.displaytTable(productByName);
+    }
+
+    
+
+
+>>>>>>> 2729f42dcb19715039d2532ff244e72e52f6870b
 }
