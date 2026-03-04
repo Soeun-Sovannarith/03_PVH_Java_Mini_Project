@@ -17,10 +17,15 @@ public class ProductController {
     public void saveProduct(List<Product> products,String option) throws SQLException {
          productService.saveProduct(products,option);
     }
+    public void unSaveProduct(List<Product> products,String option){
+         productService.unSave(products,option);
+    }
     public List<Product> readProduct() throws SQLException {
         return productService.readProduct();
     }
-
+    public List<Product> updateProduct(int id) throws SQLException {
+       return productService.update(id);
+    }
     public void deleteProduct(int id) throws SQLException {
         productService.deleteProduct(id);
     }
