@@ -34,6 +34,7 @@ public class UI {
                     productWrite = productController.writeProduct();
                     break;
                 }
+
                 case "R":{
                       readProduct=  productController.readProduct();
                     DisplayDataTable.displaytTable(readProduct);
@@ -56,7 +57,6 @@ public class UI {
                 }
 
                 case "SA": {
-
 
                     if (productWrite.isEmpty()) {
                         System.out.println("No product to save. Please write product first.");
